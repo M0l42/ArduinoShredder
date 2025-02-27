@@ -47,6 +47,15 @@ void turnOffShreddingLight() {
     isShredding = false;
 }
 
+
+void turnOnGreenLight() {
+    digitalWrite(GREEN_LED, HIGH);
+}
+
+void turnOffGreenLight() {
+    digitalWrite(GREEN_LED, LOW);
+}
+
 // Check if paper is detected
 bool isPaperDetected() {
     return digitalRead(IR_SENSOR_PIN) == LOW;
@@ -56,6 +65,7 @@ bool isPaperDetected() {
 void alertBasketFull() {
     digitalWrite(RED_LED, HIGH);
     isBasketFull = true;
+    turnOffGreenLight();
 }
 
 void alertBasketEmpty() {
@@ -76,30 +86,10 @@ void checkBasketFullness() {
 // Turn on the shredder motors
 void turnOnShredding() {
     // Motor 1 spins in one direction
+    turnOffGreenLight();
+    isShredding = true;
     digitalWrite(MOTOR_TERMINAL_1, HIGH);
     digitalWrite(MOTOR_TERMINAL_2, LOW);
-    analogWrite(MOTOR_ENABLE_PIN_1, 255);
-
-    digitalWrite(MOTOR_TERMINAL_3, HIGH);
-    digitalWrite(MOTOR_TERMINAL_4, LOW);
-    analogWrite(MOTOR_ENABLE_PIN_2, 255);
-
-    turnOnShreddingLight();
-    delay(2000);
-
-    // STOP
-    digitalWrite(MOTOR_TERMINAL_1, LOW);
-    digitalWrite(MOTOR_TERMINAL_2, LOW);
-
-    digitalWrite(MOTOR_TERMINAL_3, LOW);
-    digitalWrite(MOTOR_TERMINAL_4, LOW);
-
-    turnOffShreddingLight();
-    delay(2000);
-
-    // Motor 1 spins in the other direction
-    digitalWrite(MOTOR_TERMINAL_1, LOW);
-    digitalWrite(MOTOR_TERMINAL_2, HIGH);
     analogWrite(MOTOR_ENABLE_PIN_1, 255);
 
     digitalWrite(MOTOR_TERMINAL_3, LOW);
@@ -107,24 +97,10 @@ void turnOnShredding() {
     analogWrite(MOTOR_ENABLE_PIN_2, 255);
 
     turnOnShreddingLight();
-    delay(2000);
-
-    // STOP
-    digitalWrite(MOTOR_TERMINAL_1, LOW);
-    digitalWrite(MOTOR_TERMINAL_2, LOW);
-
-    digitalWrite(MOTOR_TERMINAL_3, LOW);
-    digitalWrite(MOTOR_TERMINAL_4, LOW);
-
-    turnOffShreddingLight();
-    delay(2000);
 }
 
 // Stop the shredder motors
 void stopShredding() {
-
-    turnOnShreddingLight();
-
     // Stop Motor 1
     digitalWrite(MOTOR_TERMINAL_1, LOW);
     digitalWrite(MOTOR_TERMINAL_2, LOW);
@@ -135,14 +111,7 @@ void stopShredding() {
 
     // Turn off shredding indicator
     turnOffShreddingLight();
-}
-
-void turnOnGreenLight() {
-    digitalWrite(GREEN_LED, HIGH);
-}
-
-void turnOffGreenLight() {
-    digitalWrite(GREEN_LED, LOW);
+    checkBasketFullness();
 }
 
 // Arduino setup function
@@ -171,16 +140,7 @@ void setup() {
     pinMode(ULTRASONIC_TRIG_PIN, OUTPUT);
     pinMode(ULTRASONIC_ECHO_PIN, INPUT);
 
-
-    turnOnGreenLight();
-    delay(1000);
-    turnOffGreenLight();
-    delay(1000);
-    turnOnShreddingLight();
-    delay(1000);
-    turnOffShreddingLight();
-    delay(1000);
-
+    checkBasketFullness();
 }
 
 int testIRSensor() {
@@ -189,5 +149,20 @@ int testIRSensor() {
 
 // Arduino loop function
 void loop() {
-    turnOnShredding();
+    if (isBasketFull) {
+        checkBasketFullness(); // Check the basket fullness when it is full
+        return;
+    }
+
+    if (isPaperDetected()) {
+        if (!isShredding) {
+            turnOnShredding();
+        }
+    } else {
+        if (isShredding) {
+            stopShredding();
+        } else {
+            turnOnGreenLight();
+        }
+    }
 }
