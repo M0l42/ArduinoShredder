@@ -1,11 +1,11 @@
 #include <Arduino.h>
 
 // Constants for pins
-#define MOTOR_TERMINAL_1 2
-#define MOTOR_TERMINAL_2 3
-#define MOTOR_TERMINAL_3 4
-#define MOTOR_TERMINAL_4 5
-#define MOTOR_ENABLE_PIN_1 6
+#define MOTOR_ENABLE_PIN_1 2
+#define MOTOR_TERMINAL_1 3
+#define MOTOR_TERMINAL_2 4
+#define MOTOR_TERMINAL_3 5
+#define MOTOR_TERMINAL_4 6
 #define MOTOR_ENABLE_PIN_2 7
 #define GREEN_LED 8
 #define BLUE_LED 9
