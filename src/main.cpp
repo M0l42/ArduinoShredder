@@ -143,14 +143,30 @@ void setup() {
     checkBasketFullness();
 }
 
-int testIRSensor() {
-    return digitalRead(IR_SENSOR_PIN);
-}
-
-// Arduino loop function
+/**
+ * @brief Main control loop for paper shredding and basket monitoring system.
+ *
+ * This function handles the primary logic for a paper shredder operation, including:
+ * - Checking if the basket is full and taking appropriate action to monitor its fullness.
+ * - Detecting the presence of paper using an infrared sensor and starting the shredding process if paper is detected.
+ * - Stopping the shredding operation when no paper is detected.
+ * - Activating a green indicator light when the shredder is idle and the basket is not full.
+ *
+ * The loop prioritizes ensuring the basket's fullness status is continuously managed, and the system
+ * transitions smoothly between shredding, idle, and full states.
+ *
+ * Pre-conditions:
+ * - Sensor and motor pins are initialized.
+ * - The system global variables `isShredding` and `isBasketFull` manage state tracking.
+ *
+ * Post-conditions:
+ * - The appropriate indicator lights and motors are activated based on the system's state.
+ *
+ * This function should be called repeatedly to maintain the operation of the shredder.
+ */
 void loop() {
     if (isBasketFull) {
-        checkBasketFullness(); // Check the basket fullness when it is full
+        checkBasketFullness();
         return;
     }
 
